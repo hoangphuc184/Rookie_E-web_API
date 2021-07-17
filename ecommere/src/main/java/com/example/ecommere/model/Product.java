@@ -2,13 +2,15 @@ package com.example.ecommere.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "product")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "product_id")
     private Long Id;
 
@@ -17,6 +19,12 @@ public class Product {
 
     @Column(name = "product_desc")
     private String productDesc;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(	name = "product_image",
+            joinColumns = @JoinColumn(name = "id_product"),
+            inverseJoinColumns = @JoinColumn(name = "id_image"))
+    private Set<Image> images = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_category" , nullable = false)
@@ -42,6 +50,7 @@ public class Product {
     private Boolean isDeleted;
 
     public Product() {
+        this.isDeleted = false;
     }
 
     public Product(Long id,

@@ -11,12 +11,16 @@ import java.util.List;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "category_id")
     private Long Id;
 
     @Column(name = "category_name")
     private String categoryName;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_image")
+    private Image image;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -31,6 +35,7 @@ public class Category {
     private List<Product> products = new ArrayList<>();
 
     public Category() {
+        this.isDeleted = false;
     }
 
     public Category(Long id,
@@ -45,6 +50,23 @@ public class Category {
         this.modifiedAt = modifiedAt;
         this.isDeleted = isDeleted;
         this.products = products;
+    }
+
+    public Category(String categoryName,
+                    LocalDateTime createdAt,
+                    LocalDateTime modifiedAt,
+                    Boolean isDeleted,
+                    List<Product> products) {
+        this.categoryName = categoryName;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.isDeleted = isDeleted;
+        this.products = products;
+    }
+
+    public Category(Long id, String categoryName) {
+        Id = id;
+        this.categoryName = categoryName;
     }
 
     public Long getId() {

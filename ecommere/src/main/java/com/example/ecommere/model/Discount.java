@@ -10,7 +10,7 @@ import java.util.List;
 @Table(name = "discount")
 public class Discount {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "discount_id")
     private Long Id;
 
@@ -23,6 +23,7 @@ public class Discount {
     @Column(name = "discount_percent")
     private Double discountPercent;
 
+    @Column(name = "active")
     private Boolean active;
 
     @Column(name = "created_at")
@@ -38,6 +39,7 @@ public class Discount {
     private List<Product> products = new ArrayList<>();
 
     public Discount() {
+        this.isDeleted = false;
     }
 
     public Discount(Long id,
@@ -58,6 +60,11 @@ public class Discount {
         this.modifiedAt = modifiedAt;
         this.isDeleted = isDeleted;
         this.products = products;
+    }
+
+    public Discount(Long id, String discountName) {
+        Id = id;
+        this.discountName = discountName;
     }
 
     public Long getId() {

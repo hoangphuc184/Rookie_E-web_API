@@ -2,21 +2,29 @@ package com.example.ecommere.model;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "order_id")
     private Long Id;
 
-    private Long idUser;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user")
+    private User user;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
+    private List<OrderItem> orderItemList;
 
     @Column(name = "total")
     private Double totalBill;
 
-    private Long idPayment;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_payment")
+    private PaymentDetail paymentDetail;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

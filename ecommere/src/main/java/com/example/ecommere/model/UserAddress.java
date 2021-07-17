@@ -7,11 +7,13 @@ import javax.persistence.*;
 public class UserAddress {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "user_address_id")
     private Long Id;
 
-    private Long idUser;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user")
+    private User user;
 
     @Column(name = "address")
     private String address;
