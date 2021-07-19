@@ -21,20 +21,20 @@ public class ProductRepositoryTest {
     @Autowired
     ProductRepository productRepository;
 
-    @Test
-    public void testCreateOneProductSuccess() {
-        Category category = new Category(1L, "Fruit");
-        Discount discount = new Discount(1L, "Giam 50");
-        Product product = new Product();
-        product.setProductName("Apple");
-        product.setProductPrice(5.5);
-        product.setProductDesc("This is an apple");
-        product.setCategory(category);
-        product.setDiscount(discount);
-        product.setQuantity(10L);
-        product.setCreatedAt(LocalDateTime.now());
-        product.setModifiedAt(LocalDateTime.now());
-        product.setDeleted(false);
-        assertNotNull(productRepository.save(product));
-    }
+//    @Test
+//    public void testCreateOneProductSuccess() {
+//        Category category = new Category(1L, "Fruit");
+//        Discount discount = new Discount(1L, "Giam 50");
+//        Product product = new Product();
+//        product.setProductName("Apple");
+//        product.setProductPrice(5.5);
+//        product.setProductDesc("This is an apple");
+//        product.setCategory(category);
+//        product.setDiscount(discount);
+//        product.setQuantity(10L);
+//        product.setCreatedAt(LocalDateTime.now());
+//        product.setModifiedAt(LocalDateTime.now());
+//        product.setDeleted(false);
+//        assertNotNull(productRepository.save(product));
+//    }
 }

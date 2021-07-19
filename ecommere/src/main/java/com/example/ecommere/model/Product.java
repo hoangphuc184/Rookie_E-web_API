@@ -1,43 +1,56 @@
 package com.example.ecommere.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "product")
+@Table(name = "product",
+    indexes = {
+        @Index(name = "product_idx_1" , columnList = "id, name"),
+        @Index(name = "product_idx_2" , columnList = "category_id"),
+    }
+)
+@Data
+@AllArgsConstructor
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "product_id")
-    private Long Id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-    @Column(name = "product_name")
-    private String productName;
 
-    @Column(name = "product_desc")
-    private String productDesc;
+    @NotBlank(message = "Name is required")
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String desc;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(	name = "product_image",
-            joinColumns = @JoinColumn(name = "id_product"),
-            inverseJoinColumns = @JoinColumn(name = "id_image"))
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id"))
     private Set<Image> images = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_category" , nullable = false)
+    @JoinColumn(name = "category_id")
     private Category category;
 
     @Column(name = "quantity")
     private Long quantity;
 
     @Column(name = "price")
-    private Double productPrice;
+    private Double price;
 
    @ManyToOne(fetch = FetchType.LAZY)
-   @JoinColumn(name = "id_discount")
+   @JoinColumn(name = "discount_id")
    private Discount discount;
 
     @Column(name = "created_at")
@@ -50,108 +63,8 @@ public class Product {
     private Boolean isDeleted;
 
     public Product() {
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = LocalDateTime.now();
         this.isDeleted = false;
-    }
-
-    public Product(Long id,
-                   String productName,
-                   String productDesc,
-                   Category category,
-                   Long quantity,
-                   Double productPrice,
-                   Discount discount,
-                   LocalDateTime createdAt,
-                   LocalDateTime modifiedAt,
-                   Boolean isDeleted) {
-        Id = id;
-        this.productName = productName;
-        this.productDesc = productDesc;
-        this.category = category;
-        this.quantity = quantity;
-        this.productPrice = productPrice;
-        this.discount = discount;
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
-        this.isDeleted = isDeleted;
-    }
-
-    public Long getId() {
-        return Id;
-    }
-
-    public void setId(Long id) {
-        Id = id;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getProductDesc() {
-        return productDesc;
-    }
-
-    public void setProductDesc(String productDesc) {
-        this.productDesc = productDesc;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
-
-    public Double getProductPrice() {
-        return productPrice;
-    }
-
-    public void setProductPrice(Double productPrice) {
-        this.productPrice = productPrice;
-    }
-
-    public Discount getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(Discount discount) {
-        this.discount = discount;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getModifiedAt() {
-        return modifiedAt;
-    }
-
-    public void setModifiedAt(LocalDateTime modifiedAt) {
-        this.modifiedAt = modifiedAt;
-    }
-
-    public Boolean getDeleted() {
-        return isDeleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        isDeleted = deleted;
     }
 }

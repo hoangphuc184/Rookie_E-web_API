@@ -1,23 +1,26 @@
 package com.example.ecommere.model;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "order_item")
+@Data
 public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_item_id")
-    private Long Id;
+    @Column(name = "id")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_order")
-    private Order order;
+    @JoinColumn(name = "order_id")
+    private Orders orders;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_product")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity")

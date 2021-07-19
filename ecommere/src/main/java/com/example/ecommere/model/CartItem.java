@@ -1,23 +1,27 @@
 package com.example.ecommere.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cart_item")
+@Data
 public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "cart_item_id")
-    private Long Id;
+    @Column(name = "id")
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_cart")
-    private Cart cart;
+    @JoinColumn(name = "cart_id")
+    private Carts carts;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_product")
+    @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity")

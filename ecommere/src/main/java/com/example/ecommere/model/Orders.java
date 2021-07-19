@@ -1,38 +1,38 @@
 package com.example.ecommere.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "discount",
+@Table(name = "orders",
     indexes = {
-        @Index(name = "discount_idx", columnList = "id, name, percent")
+        @Index(name = "order_idx", columnList = "id, user_id")
     })
 @Data
 @AllArgsConstructor
-public class Discount {
+public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
-    private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "description")
-    private String desc;
+    @OneToMany(mappedBy = "orders", fetch = FetchType.LAZY)
+    private List<OrderItem> orderItemList;
 
-    @Column(name = "percent")
-    private Double percent;
+    @Column(name = "total")
+    private Double totalBill;
 
-    @Column(name = "active")
-    private Boolean active;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id")
+    private PaymentDetail paymentDetail;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -43,13 +43,10 @@ public class Discount {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    @OneToMany(mappedBy = "discount", fetch = FetchType.LAZY)
-    private List<Product> products = new ArrayList<>();
-
-    public Discount() {
+    public Orders() {
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
-        this.active = true;
         this.isDeleted = false;
+        this.totalBill = 0D;
     }
 }

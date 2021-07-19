@@ -1,18 +1,22 @@
 package com.example.ecommere.model;
 
 import com.example.ecommere.enums.EStatus;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "payment_details")
+@Data
 public class PaymentDetail {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "payment_detail_id")
-    private Long Id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "amount")
     private Long amount;

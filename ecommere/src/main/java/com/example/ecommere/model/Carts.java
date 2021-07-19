@@ -1,28 +1,37 @@
 package com.example.ecommere.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table(name = "image",
+@Table(name = "carts",
     indexes = {
-        @Index(name = "image_idx", columnList = "id, url")
-    })
+        @Index(name = "cart_idx" , columnList = "id , user_id")
+    }
+)
 @Data
-public class Image {
+@AllArgsConstructor
+public class Carts {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "url")
-    private String url;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Column(name = "description")
-    private String desc;
+    @OneToMany(mappedBy = "carts", fetch = FetchType.LAZY)
+    private List<CartItem> cartItemList = new ArrayList<>();
+
+    @Column(name = "total")
+    private Double total;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -33,7 +42,8 @@ public class Image {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
 
-    public Image() {
+    public Carts() {
+        this.total = 0D;
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
         this.isDeleted = false;

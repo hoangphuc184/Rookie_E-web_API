@@ -2,9 +2,10 @@ package com.example.ecommere.repository;
 
 import com.example.ecommere.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
+import java.util.List;
 
-@Repository
+@Component
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-
+//    List<Category> findByName(String name);
 }

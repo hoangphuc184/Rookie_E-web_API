@@ -1,28 +1,28 @@
 package com.example.ecommere.model;
 
 import com.example.ecommere.enums.ERole;
+import lombok.Data;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+
 
 @Entity
-@Table(name = "role")
+@Table(name = "role",
+    indexes = {
+        @Index(name = "role_idx", columnList = "id, name")
+    })
+@Data
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "role_id")
-    private Long Id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role_name", length = 50)
+    @Column(name = "name", length = 50)
     private ERole role_name;
 
     public Role(ERole name){
         this.role_name = name;
     }
-
-    public Role() {
-    }
-
-
 }
