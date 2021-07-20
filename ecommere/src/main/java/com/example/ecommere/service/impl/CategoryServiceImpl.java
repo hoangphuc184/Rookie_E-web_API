@@ -1,8 +1,11 @@
 package com.example.ecommere.service.impl;
 
 import com.example.ecommere.constant.ErrorCode;
+import com.example.ecommere.exception.CreateDataFailException;
 import com.example.ecommere.exception.DataNotFoundException;
+import com.example.ecommere.exception.DeleteDataFailException;
 import com.example.ecommere.model.Category;
+import com.example.ecommere.model.Image;
 import com.example.ecommere.repository.CategoryRepository;
 import com.example.ecommere.service.CategoryService;
 
@@ -19,8 +22,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     CategoryRepository categoryRepository;
 
-    public List<Category> getAll() {
-        return categoryRepository.findAll();
+    public List<Category> getAll() throws DataNotFoundException {
+        try {
+            log.info("Got Category list");
+            return categoryRepository.findAll();
+        }catch (Exception ex) {
+            throw new DataNotFoundException(ErrorCode.LIST_CATE_NOT_FOUND_EXCEPTION);
+        }
+
     }
 
     public Category get(Long categoryId) throws DataNotFoundException {
@@ -29,38 +38,59 @@ public class CategoryServiceImpl implements CategoryService {
             log.info("Found Category: " + optCategory.get().getName());
             return optCategory.get();
         }catch(Exception ex){
-            throw new DataNotFoundException(ErrorCode.ERR_CATEGORY_NOT_FOUND_EXCEPTON);
+            throw new DataNotFoundException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
         }
-
     }
 
-    public Category create(Category category) {
-        return categoryRepository.save(category);
-    }
-
-    public void delete(Long categoryId) {
-        Optional<Category> optCategory = categoryRepository.findById(categoryId);
-//       optCategory.ifPresent(categoryRepository::delete);
-        optCategory.map(category -> {
-            category.setIsDeleted(true);
+    public Category create(Category category) throws CreateDataFailException {
+        try {
+            log.info("Saved Category: " + category.getName());
             return categoryRepository.save(category);
-        });
-        //log.info("Category deleted " + optCategory.get().getId());
+        }catch (Exception ex){
+            throw new CreateDataFailException(ErrorCode.CATEGORY_CREATED_FAIL_EXCEPTION);
+        }
     }
 
-    public Category update(Category newCategory, Long categoryId) {
-        return categoryRepository.findById(categoryId)
-                .map(category -> {
-                    category.setName(newCategory.getName());
-                    category.setDesc(newCategory.getDesc());
-//                    category.setImage(newCategory.getImage());
-//                    category.setProducts(newCategory.getProducts());
-                    category.setModifiedAt(newCategory.getModifiedAt());
-                    return categoryRepository.save(category);
-                })
-                .orElseGet(() -> {
-                    newCategory.setId(categoryId);
-                    return categoryRepository.save(newCategory);
-                });
+    public Category delete(Long categoryId) throws DeleteDataFailException {
+        try {
+            Optional<Category> optCategory = categoryRepository.findById(categoryId);
+            Category category = optCategory.get();
+            Image image = category.getImage();
+            image.setIsDeleted(true);
+            category.setIsDeleted(true);
+            category.setImage(image);
+            log.info("Deleted Category: " + category.getName());
+            return categoryRepository.save(category);
+        }catch (Exception ex) {
+            throw new DeleteDataFailException(ErrorCode.CATEGORY_DELETED_FAIL_EXCEPTION);
+        }
+    }
+
+    public Category update(Category newCategory, Long categoryId) throws DataNotFoundException {
+        try {
+
+            return categoryRepository.findById(categoryId)
+                    .map(category -> {
+                        category.setName(newCategory.getName());
+                        category.setDesc(newCategory.getDesc());
+                        if (newCategory.getImage() != null) {
+                            Image image = category.getImage();
+                            image.setUrl(newCategory.getImage().getUrl());
+                            image.setDesc(newCategory.getImage().getDesc());
+                            category.setImage(image);
+                        }
+                        category.setModifiedAt(newCategory.getModifiedAt());
+                        category.setIsDeleted(newCategory.getIsDeleted());
+                        log.info("Updated category: " + category.getName());
+                        return categoryRepository.save(category);
+                    })
+                    .orElseGet(() -> {
+                        newCategory.setId(categoryId);
+                        log.info("Create new category: " + newCategory.getName());
+                        return categoryRepository.save(newCategory);
+                    });
+        }catch (Exception ex) {
+            throw new DataNotFoundException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+        }
     }
 }

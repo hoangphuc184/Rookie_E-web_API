@@ -30,4 +30,8 @@ public class PaymentDetail {
 
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
+
+    public PaymentDetail(EStatus status) {
+        this.status = status;
+    }
 }

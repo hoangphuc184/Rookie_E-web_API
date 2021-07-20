@@ -1,18 +1,21 @@
 package com.example.ecommere.service;
 
+import com.example.ecommere.exception.CreateDataFailException;
 import com.example.ecommere.exception.DataNotFoundException;
+import com.example.ecommere.exception.DeleteDataFailException;
 import com.example.ecommere.model.Category;
 
 import java.util.List;
 
 public interface CategoryService {
-    public List<Category> getAll();
+
+    public List<Category> getAll() throws DataNotFoundException;
 
     public Category get(Long categoryId) throws DataNotFoundException;
 
-    public Category create(Category category);
+    public Category create(Category category) throws CreateDataFailException;
 
-    public void delete(Long categoryId);
+    public Category delete(Long categoryId) throws DeleteDataFailException;
 
-    public Category update(Category newCategory, Long categoryId);
+    public Category update(Category newCategory, Long categoryId) throws DataNotFoundException;
 }

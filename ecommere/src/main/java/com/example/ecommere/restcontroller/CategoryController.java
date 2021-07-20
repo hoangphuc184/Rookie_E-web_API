@@ -5,7 +5,9 @@ import com.example.ecommere.constant.SuccessCode;
 import com.example.ecommere.converter.CategoryConverter;
 import com.example.ecommere.dto.CategoryDTO;
 import com.example.ecommere.dto.ResponseDTO;
+import com.example.ecommere.exception.CreateDataFailException;
 import com.example.ecommere.exception.DataNotFoundException;
+import com.example.ecommere.exception.DeleteDataFailException;
 import com.example.ecommere.exception.ParseEntityDtoException;
 import com.example.ecommere.model.Category;
 import com.example.ecommere.service.CategoryService;
@@ -15,10 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -26,42 +26,65 @@ import java.util.Optional;
 public class CategoryController {
 
     @Autowired
-    private CategoryService categoryService;
-
-    @GetMapping("/categories")
-    public List<Category> getListCategories() {
-        return categoryService.getAll();
-    }
+    CategoryService categoryService;
 
     @Autowired
     CategoryConverter categoryConverter;
 
-    @GetMapping("/categories/{id}")
-    public ResponseEntity<ResponseDTO> getCategory(@PathVariable(value = "id") Long categoryId) throws DataNotFoundException, ParseEntityDtoException {
+    @GetMapping("/categories")
+    public ResponseEntity<ResponseDTO> getListCategories() throws ParseEntityDtoException, DataNotFoundException {
         ResponseDTO response = new ResponseDTO();
-        CategoryDTO category = categoryConverter.convertToDTO(categoryService.get(categoryId));
-        response.setData(category);
-        response.setSuccessCode(SuccessCode.DATA_LOADED_SUCCESS);
+        List<CategoryDTO> categoryDTOList = new ArrayList<>();
+        for (Category category : categoryService.getAll()) {
+            CategoryDTO categoryDTO = categoryConverter.convertToDTO(category);
+            categoryDTOList.add(categoryDTO);
+        }
+        response.setData(categoryDTOList);
+        response.setSuccessCode(SuccessCode.LIST_CATE_LOADED_SUCCESS);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/categories/{id}")
+    public ResponseEntity<ResponseDTO> getCategory(@PathVariable(value = "id") Long categoryId)
+            throws DataNotFoundException, ParseEntityDtoException {
+        ResponseDTO response = new ResponseDTO();
+        CategoryDTO categoryDTO = categoryConverter.convertToDTO(categoryService.get(categoryId));
+        response.setData(categoryDTO);
+        response.setSuccessCode(SuccessCode.CATEGORY_LOADED_SUCCESS);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/categories")
-    public void createCategory(@RequestBody Category newCategory) {
-        log.info(String.valueOf(newCategory));
-        categoryService.create(newCategory);
+    public ResponseEntity<ResponseDTO> createCategory(@RequestBody CategoryDTO newCategoryDTO)
+            throws CreateDataFailException, ParseEntityDtoException {
+        ResponseDTO response = new ResponseDTO();
+        Category category = categoryConverter.convertToEntity(newCategoryDTO);
+        CategoryDTO categoryDTO = categoryConverter.convertToDTO(categoryService.create(category));
+        response.setData(categoryDTO);
+        response.setSuccessCode(SuccessCode.CATEGORY_CREATED_SUCCESS);
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/categories/{id}")
-    public Map<String, Boolean> deleteCategory(@PathVariable(value = "id") Long categoryId) {
-        categoryService.delete(categoryId);
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("deleted", Boolean.TRUE);
-        return response;
+    public ResponseEntity<ResponseDTO> deleteCategory(@PathVariable(value = "id") Long categoryId)
+            throws ParseEntityDtoException, DeleteDataFailException {
+        ResponseDTO response = new ResponseDTO();
+        Category category = categoryService.delete(categoryId);
+        CategoryDTO categoryDTO = categoryConverter.convertToDTO(category);
+        response.setData(categoryDTO);
+        response.setSuccessCode(SuccessCode.CATEGORY_DELETED_SUCCESS);
+        return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/categories/{id}")
-    public Category updateCategory(@RequestBody Category newCategory, @PathVariable(value = "id") Long categoryId) {
-        return categoryService.update(newCategory, categoryId);
+    public ResponseEntity<ResponseDTO> updateCategory(@RequestBody CategoryDTO newCategoryDTO, @PathVariable(value = "id") Long categoryId)
+            throws DataNotFoundException, ParseEntityDtoException {
+        ResponseDTO response = new ResponseDTO();
+        Category category = categoryConverter.convertToEntity(newCategoryDTO);
+        CategoryDTO categoryDTO = categoryConverter.convertToDTO(categoryService.update(category, categoryId));
+        response.setData(categoryDTO);
+        response.setSuccessCode(SuccessCode.CATEGORY_UPDATED_SUCCESS);
+        return ResponseEntity.ok().body(response);
     }
 
 }

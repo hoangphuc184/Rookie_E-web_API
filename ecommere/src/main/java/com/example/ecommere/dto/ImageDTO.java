@@ -5,22 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CategoryDTO {
+public class ImageDTO {
 
     private Long id;
 
-    @NotBlank(message = "Name is required")
-    private String name;
+    @NotBlank(message = "url is required")
+    private String url;
 
     @NotBlank(message = "Description is required")
     private String desc;
-
-    @NotNull
-    private ImageDTO image;
-
 }

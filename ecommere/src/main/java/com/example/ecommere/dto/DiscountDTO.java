@@ -5,12 +5,10 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
-public class ProductDTO {
+public class DiscountDTO {
 
     private Long id;
 
@@ -21,16 +19,9 @@ public class ProductDTO {
     private String desc;
 
     @NotNull
-    private Long quantity;
+    private Double percent;
 
     @NotNull
-    private Double price;
+    private Boolean active;
 
-    @NotNull
-    private Long category_id;
-
-    private Long discount_id;
-
-    @NotNull
-    private List<ImageDTO> images;
 }
