@@ -30,6 +30,7 @@ public class UserPayment {
     private Boolean isDeleted;
 
     public UserPayment() {
+        this.createdAt = LocalDateTime.now();
         this.isDeleted = false;
     }
 }

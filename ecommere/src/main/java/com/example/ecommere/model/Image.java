@@ -1,6 +1,5 @@
 package com.example.ecommere.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -11,6 +10,12 @@ import java.time.LocalDateTime;
     indexes = {
         @Index(name = "image_idx", columnList = "id, url")
     })
+@NamedQueries({
+        @NamedQuery(name = "Image.findByUrl",
+                query = "SELECT i FROM Image i where i.url = :url"),
+        @NamedQuery(name = "Image.findListById",
+                query = "SELECT i.id FROM Image i")
+})
 @Data
 public class Image {
 
@@ -21,9 +26,6 @@ public class Image {
 
     @Column(name = "url")
     private String url;
-
-    @Column(name = "description")
-    private String desc;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

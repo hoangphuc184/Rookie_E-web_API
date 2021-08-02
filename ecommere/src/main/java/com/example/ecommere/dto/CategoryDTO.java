@@ -21,6 +21,6 @@ public class CategoryDTO {
     private String desc;
 
     @NotNull
-    private ImageDTO image;
+    private String image_url;
 
 }

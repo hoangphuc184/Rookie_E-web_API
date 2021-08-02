@@ -14,7 +14,4 @@ public class ImageDTO {
 
     @NotBlank(message = "url is required")
     private String url;
-
-    @NotBlank(message = "Description is required")
-    private String desc;
 }

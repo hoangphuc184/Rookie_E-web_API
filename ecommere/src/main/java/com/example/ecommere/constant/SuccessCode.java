@@ -34,4 +34,16 @@ public class SuccessCode {
     public static final String PRODUCT_DELETED_SUCCESS = "PRODUCT_DELETED_SUCCESS";
 
     public static final String PRODUCT_UPDATED_SUCCESS = "PRODUCT_UPDATED_SUCCESS";
+
+    /** USER **/
+    public static final String USER_LOADED_SUCCESS = "USER_LOADED_SUCCESS";
+
+    public static final String USER_DELETED_SUCCESS = "USER_DELETED_SUCCESS";
+
+    public static final String ADDRESS_ADDED_SUCCESS = "ADDRESS_ADDED_SUCCESS";
+
+    /** AUTHENTICATION **/
+    public static final String USER_LOGIN_SUCCESS = "USER_LOGIN_SUCCESS";
+
+    public static final String USER_SIGNUP_SUCCESS = "USER_SIGNUP_SUCCESS";
 }

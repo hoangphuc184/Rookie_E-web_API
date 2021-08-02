@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CategoryService {
 
-    public List<Category> getAll() throws DataNotFoundException;
+    public List<Category> getAll(int page, int limit) throws DataNotFoundException;
 
     public Category get(Long categoryId) throws DataNotFoundException;
 

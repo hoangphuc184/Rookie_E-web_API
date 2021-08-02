@@ -6,16 +6,19 @@ import com.example.ecommere.exception.DataNotFoundException;
 import com.example.ecommere.exception.DeleteDataFailException;
 import com.example.ecommere.model.Image;
 import com.example.ecommere.model.Product;
+import com.example.ecommere.repository.ImageRepository;
 import com.example.ecommere.repository.ProductRepository;
 import com.example.ecommere.service.ProductService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Slf4j
@@ -24,12 +27,25 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductRepository productRepository;
 
-    public List<Product> getAll() throws DataNotFoundException {
+    public List<Product> getAll(int page, int limit) throws DataNotFoundException {
         try {
+            Pageable pageable = PageRequest.of(page, limit);
+            Page<Product> productPage = productRepository.findAll(pageable);
+            List<Product> products = productPage.getContent();
             log.info("Got product list");
-            return productRepository.findAll();
+            return products;
         }catch (Exception ex) {
-            throw new DataNotFoundException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
+            throw new DataNotFoundException(ErrorCode.LIST_PRODUCT_NOT_FOUND_EXCEPTION);
+        }
+    }
+
+    public List<Product> getAllByCategory(Long categoryId) throws DataNotFoundException {
+        try {
+            List<Product> products = productRepository.findProductByCategory(categoryId);
+            log.info("Got product list with category = " + categoryId);
+            return products;
+        }catch (Exception ex) {
+            throw new DataNotFoundException(ErrorCode.LIST_PRODUCT_NOT_FOUND_EXCEPTION);
         }
     }
 
@@ -70,21 +86,8 @@ public class ProductServiceImpl implements ProductService {
 
     public Product update(Product newProduct, Long productId) throws DataNotFoundException {
         try {
-            return productRepository.findById(productId)
-                    .map(product -> {
-                        product.setName(newProduct.getName());
-                        product.setDesc(newProduct.getDesc());
-                        product.setPrice(newProduct.getPrice());
-                        product.setQuantity(newProduct.getQuantity());
-                        product.setDiscount(newProduct.getDiscount());
-                        product.setCategory(newProduct.getCategory());
-                        product.setImages(newProduct.getImages());
-                        product.setModifiedAt(newProduct.getModifiedAt());
-                        return productRepository.save(product);
-                    }).orElseGet(() -> {
-                        newProduct.setId(productId);
-                        return productRepository.save(newProduct);
-                    });
+            newProduct.setId(productId);
+            return productRepository.save(newProduct);
         } catch (Exception ex) {
             throw new DataNotFoundException(ErrorCode.PRODUCT_NOT_FOUND_EXCEPTION);
         }

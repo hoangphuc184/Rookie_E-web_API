@@ -1,7 +1,10 @@
 package com.example.ecommere.repository;
 
+import com.example.ecommere.constant.ErrorCode;
+import com.example.ecommere.exception.DataNotFoundException;
 import com.example.ecommere.model.Category;
 
+import com.example.ecommere.model.Image;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -23,68 +26,61 @@ public class CategoryRepositoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
-//    @Test
-//    public void testCreateNewCategorySuccess() {
-//        Category fungus = new Category();
-//        fungus.setCategoryName("Fungus");
-//        fungus.setCreatedAt(LocalDateTime.now());
-//        fungus.setModifiedAt(LocalDateTime.now());
-//        fungus.setIsDeleted(false);
-//        assertNotNull(categoryRepository.save(fungus));
-//    }
+    @Test
+    public void testGetAllCategory() {
+        List<Category> categories = categoryRepository.findAll();
+        assertNotNull(categories);
+    }
 
-//    @Test
-//    public void testGetOneCategorySuccess() {
-//        Category fungus = new Category();
-//        fungus.setCategoryName("Bras");
-//
-//        categoryRepository.save(fungus);
-//        List<Category> actual = categoryRepository.findByName("Bras");
-//        Category actualReturn = actual.get(0);
-//        assertEquals(fungus.getId(), actualReturn.getId());
-//    }
+    @Test
+    public void testGetCategoryById() throws DataNotFoundException {
+        Category category;
+        Optional<Category> result = categoryRepository.findById(1L);
+        if (result.isPresent()){
+            category = result.get();
+        } else {
+            throw new DataNotFoundException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+        }
+        assertNotNull(category);
+    }
 
-//    @Test
-//    public void testGetListCategorySuccess() {
-////        List<Category> categories = new ArrayList<>();
-//        Category fungus = new Category("abc", LocalDateTime.now(), LocalDateTime.now(), false);
-//        Category fun = new Category("abcd", LocalDateTime.now(), LocalDateTime.now(), false);
-//        Category fuu = new Category("abcde", LocalDateTime.now(), LocalDateTime.now(), false);
-////        categories.add(fungus);
-////        categories.add(fun);
-////        categories.add(fuu);
-//
-//        categoryRepository.save(fungus);
-//        categoryRepository.save(fun);
-//        categoryRepository.save(fuu);
-//        List<Category> expected = new ArrayList<>();
-//        System.out.println(expected);
-//        System.out.println(categoryRepository.findAll());
-//        assertNotEquals(expected, categoryRepository.findAll());
-//    }
-//
-//    @Test
-//    public void testUpdateOneCategorySuccess() {
-//        Category category = new Category(11L,"zxc", LocalDateTime.now(), LocalDateTime.now(), false);
-//        Category newCategory = new Category("abd", LocalDateTime.now(), LocalDateTime.now(), false);
-//        categoryRepository.save(category);
-//        categoryRepository.findById(11L).map(category1 -> {
-//            category1.setCategoryName(newCategory.getCategoryName());
-//            return categoryRepository.save(category1);
-//        });
-//        Optional<Category> optCate = categoryRepository.findById(11L);
-//        Category actual = optCate.get();
-//        assertEquals(newCategory.getCategoryName(), actual.getCategoryName());
-//        assertNotEquals(category.getCategoryName(), actual.getCategoryName());
-//    }
+    @Test
+    public void testCreateCategory() {
+        Category category = new Category();
+        Image image = new Image();
+        image.setUrl("Test cate 1");
+        category.setName("Test cate 1");
+        category.setDesc("Test cate 1");
+        category.setImage(image);
+        assertNotNull(categoryRepository.save(category));
+    }
 
-//    @Test
-//    public void testDeleteOneCategorySuccess() {
-//        Category category = new Category(1L,"bdd", LocalDateTime.now(), LocalDateTime.now(), false);
-//        categoryRepository.save(category);
-//        categoryRepository.delete(category);
-//        List<Category> categories = categoryRepository.findAll();
-//        Optional<Category> opt = categoryRepository.findById(1L);
-//        Mockito.
-//    }
+    @Test
+    public void testUpdateCategory() throws DataNotFoundException {
+        Optional<Category> result = categoryRepository.findById(4L);
+        Category category;
+        if (result.isPresent()) {
+            category = result.get();
+        }else {
+            throw new DataNotFoundException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+        }
+        category.setName("New Test cate 1");
+        assertNotNull(categoryRepository.save(category));
+    }
+
+    @Test
+    public void testDeleteCategory() throws DataNotFoundException {
+        Optional<Category> result = categoryRepository.findById(4L);
+        Category category;
+        if (result.isPresent()) {
+            category = result.get();
+        }else {
+            throw new DataNotFoundException(ErrorCode.CATEGORY_NOT_FOUND_EXCEPTION);
+        }
+        category.setIsDeleted(true);
+        categoryRepository.save(category);
+        Optional<Category> actual = categoryRepository.findById(4L);
+        assertTrue(actual.get().getIsDeleted());
+    }
+
 }

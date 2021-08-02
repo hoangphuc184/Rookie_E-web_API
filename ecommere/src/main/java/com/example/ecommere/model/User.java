@@ -1,14 +1,13 @@
 package com.example.ecommere.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users",
@@ -16,7 +15,9 @@ import java.util.Set;
         @Index(name = "user_idx1", columnList = "id, username"),
         @Index(name = "user_idx2", columnList = "first_name, last_name")
     })
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 public class User {
 
@@ -25,37 +26,51 @@ public class User {
     @Column(name = "id")
     private Long id;
 
+    @NotBlank
+    @Size(min=3, max = 50)
     @Column(name = "username")
-    private String userName;
+    private String username;
 
+    @NotBlank
+    @Size(min=6, max = 100)
     @Column(name = "password")
     private String password;
 
+    @Size(min=3, max = 50)
     @Column(name = "first_name")
-    private String firstName;
+    private String first_name;
 
+    @Size(min=3, max = 50)
     @Column(name = "last_name")
-    private String lastName;
+    private String last_name;
 
+    @NotBlank
+    @Size(max = 30)
+    @Email
     @Column(name = "email")
     private String email;
 
+    @Size(max = 10)
     @Column(name = "phone")
-    private Long phone;
+    private String phone;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(	name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @ToString.Exclude
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Orders> ordersList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<UserPayment> userPaymentList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<UserAddress> userAddressList = new ArrayList<>();
 
     @Column(name = "created_at")
@@ -71,5 +86,26 @@ public class User {
         this.createdAt = LocalDateTime.now();
         this.modifiedAt = LocalDateTime.now();
         this.isDeleted = false;
+    }
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = LocalDateTime.now();
+        this.isDeleted = false;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        User other = (User) obj;
+        return Objects.equals(id, other.id);
     }
 }

@@ -1,5 +1,9 @@
 package com.example.ecommere.service.impl;
 
+import com.example.ecommere.constant.ErrorCode;
+import com.example.ecommere.exception.CreateDataFailException;
+import com.example.ecommere.exception.DataNotFoundException;
+import com.example.ecommere.exception.DeleteDataFailException;
 import com.example.ecommere.model.Carts;
 import com.example.ecommere.repository.CartRepository;
 import com.example.ecommere.service.CartService;
@@ -18,25 +22,57 @@ public class CartServiceImpl implements CartService {
     @Autowired
     CartRepository cartRepository;
 
-    public List<Carts> getAll() {
-        return cartRepository.findAll();
+    @Override
+    public List<Carts> getAll() throws DataNotFoundException {
+        try {
+            log.info("List carts loaded");
+            return cartRepository.findAll();
+        }catch (Exception ex) {
+            throw new DataNotFoundException(ErrorCode.LIST_CART_NOT_FOUND_EXCEPTION);
+        }
     }
 
-    public Carts get(Long cartId) {
-        Optional<Carts> optCart = cartRepository.findById(cartId);
-        return optCart.orElse(null);
+    @Override
+    public Carts get(Long cartId) throws DataNotFoundException {
+        try {
+            Optional<Carts> optCart = cartRepository.findById(cartId);
+            log.info("Found Cart: " + optCart.get().getId());
+            return optCart.get();
+        }catch (Exception ex) {
+            throw new DataNotFoundException(ErrorCode.CART_NOT_FOUND_EXCEPTION);
+        }
     }
 
-    public Carts create(Carts carts) {
-        return cartRepository.save(carts);
-    }
-
-    public void delete(Long cartId)  {
-        Optional<Carts> optCart = cartRepository.findById(cartId);
-        optCart.map(carts -> {
-            carts.setIsDeleted(true);
+    @Override
+    public Carts create(Carts carts) throws CreateDataFailException {
+        try {
+            log.info("Cart created: " + carts.getId());
             return cartRepository.save(carts);
-        });
-        log.info("Cart deleted " + optCart.get().getId());
+        }catch (Exception ex) {
+            throw new CreateDataFailException(ErrorCode.CART_CREATED_FAIL_EXCEPTION);
+        }
+    }
+
+    @Override
+    public Carts delete(Long cartId) throws DeleteDataFailException {
+        try {
+            Optional<Carts> optCart = cartRepository.findById(cartId);
+            Carts cart = optCart.get();
+            cart.setIsDeleted(true);
+            return cart;
+        }catch (Exception ex) {
+            throw new DeleteDataFailException(ErrorCode.CART_DELETED_FAIL_EXCEPTION);
+        }
+    }
+
+    @Override
+    public Carts update(Carts newCarts, Long cartId) throws DataNotFoundException {
+        try {
+            newCarts.setId(cartId);
+            return cartRepository.save(newCarts);
+
+        }catch (Exception ex) {
+            throw new DataNotFoundException(ErrorCode.CART_NOT_FOUND_EXCEPTION);
+        }
     }
 }
